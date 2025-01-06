@@ -42,7 +42,7 @@ function MyCards(){
     
 
     useEffect(() => { 
-        fetch('https://pokeapi.co/api/v2/pokemon?limit=5') // Adjust the limit as needed 
+        fetch('https://pokeapi.co/api/v2/pokemon?limit=20') // Adjust the limit as needed 
             .then(response => response.json()) 
             .then(data => {
                  const fetches = data.results.map(pokemon => fetch(pokemon.url) 
@@ -63,7 +63,7 @@ function MyCards(){
     }
 
     return (
-        <div className='main-container'>
+        <div>
             <h2 className='header'>Memory Game</h2>
             <h4>Get points by clicking undiscovered pokemon characters to earn some points</h4>
             <Points playerPoints={playerPoints} highScore={highScore}></Points>
