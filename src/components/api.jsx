@@ -5,7 +5,11 @@ import {Points} from './points';
 function MyCards(){
     const [pokemonList,setPokemonList]=useState([]);
     const [discoveredList,setDiscoveredList]=useState([]);
+    const [playerPoints,setPlayerPoints]=useState(0);
+    const [highScore,setHighScore]=useState(0);
     const [loading,setLoading]=useState(true);
+
+    let hasDuplicates=false;
     
     const randomize=(e)=>{
         let shuffleList=[...pokemonList];
@@ -15,10 +19,27 @@ function MyCards(){
             let j=Math.floor(Math.random()*(i+1));
             [shuffleList[i],shuffleList[j]]=[shuffleList[j],shuffleList[i]];
         }
-        setDiscoveredList(prevItems=>[...prevItems,e.target.dataset.key]);
-        console.log(discoveredList);//Just for testing the output
+        
         setPokemonList(shuffleList);
+        //Checking whether an item has been selected more than once
+        hasDuplicates=discoveredList.includes(e.target.dataset.key);
+        (!hasDuplicates)&&setDiscoveredList(prevItems=>[...prevItems,e.target.dataset.key]);//If its not selected before add it to the discovered list
+
+        pointsCheck();
     }
+    //For adding a point if an item is not selected before, and if selected before point will be 0
+    const pointsCheck=()=>{
+
+        if(!hasDuplicates){
+            setPlayerPoints(points=>points+1);
+        }
+        else{
+            setPlayerPoints(0);
+            setDiscoveredList([]);
+            (playerPoints>highScore)&&setHighScore(playerPoints);//For setting the high score if the new point is greater than the previous high score
+        }
+    }
+    
 
     useEffect(() => { 
         fetch('https://pokeapi.co/api/v2/pokemon?limit=5') // Adjust the limit as needed 
@@ -45,7 +66,7 @@ function MyCards(){
         <div className='main-container'>
             <h2 className='header'>Memory Game</h2>
             <h4>Get points by clicking undiscovered pokemon characters to earn some points</h4>
-            <Points discoveredList={discoveredList} setDiscoveredList={setDiscoveredList}></Points>
+            <Points playerPoints={playerPoints} highScore={highScore}></Points>
            <Content pokemonList={pokemonList} randomize={randomize}></Content>
         </div>
     );
